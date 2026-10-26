@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from bento import Err, Nothing, Ok, Option, Panic, Some
+from bento import Err, Nothing, Ok, Option, Some, UnwrapError
 
 
 # ==========================================
@@ -236,7 +236,7 @@ class TestNothing:
     def test_expect_should_raise_Panic_exception_with_msg(
         self, nothing: Option[int]
     ) -> None:
-        with pytest.raises(Panic, match="Testing expect"):
+        with pytest.raises(UnwrapError, match="Testing expect"):
             nothing.expect("Testing expect")
 
     # ==========filter==========
@@ -353,7 +353,7 @@ class TestNothing:
 
     # ==========unwrap==========
     def test_unwrap_should_raise_Panic_exception(self, nothing: Option[int]) -> None:
-        with pytest.raises(Panic):
+        with pytest.raises(UnwrapError):
             nothing.unwrap()
 
     # ==========unwrap_or==========

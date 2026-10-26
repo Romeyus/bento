@@ -3,13 +3,17 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, cast, final, override
 
-from bento._exceptions import Panic
-
 # ==========================================
 # ===            Types                   ===
 # ==========================================
 type Option[T] = Some[T] | Nothing[T]
 type Result[T, E] = Ok[T, E] | Err[E, T]
+
+
+# ==========================================
+# ===            Errors                  ===
+# ==========================================
+class UnwrapError(Exception): ...
 
 
 # ==========================================
@@ -28,7 +32,7 @@ class _Option[T](ABC):
     def expect(self, msg: str) -> T:
         """
         Returns the contained `Some` value, consuming the `self` value.
-        Raises a `Panic` exception if the option is `Nothing` with a custom message provided by `msg`.
+        Raises an `UnwrapError` if the option is `Nothing` with a custom message provided by `msg`.
         """
 
     @abstractmethod
@@ -94,7 +98,7 @@ class _Option[T](ABC):
     def unwrap(self) -> T:
         """
         Returns the contained `Some` value, consuming the `self` value.
-        Raises a `Panic` exception if the option is `Nothing`.
+        Raises an `UnwrapError` if the option is `Nothing`.
         """
 
     @abstractmethod
@@ -204,7 +208,7 @@ class Nothing[T = Any](_Option[T]):
 
     @override
     def expect(self, msg: str) -> T:
-        raise Panic(f"Called Option.expect() on Nothing, {msg}")
+        raise UnwrapError(f"Called Option.expect() on Nothing, {msg}")
 
     @override
     def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
@@ -260,7 +264,7 @@ class Nothing[T = Any](_Option[T]):
 
     @override
     def unwrap(self) -> T:
-        raise Panic("Called Option.unwrap() on Nothing")
+        raise UnwrapError("Called Option.unwrap() on Nothing")
 
     @override
     def unwrap_or(self, default: T) -> T:
