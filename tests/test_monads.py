@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from bento import Nothing, Option, Panic, Some
+from bento import Err, Nothing, Ok, Option, Panic, Some
 
 
 # ==========================================
@@ -154,6 +154,21 @@ class TestSome:
         some.map_or_else(default, lambda v: v * 2)
         default.assert_not_called()
 
+    # ==========ok_or==========
+    def test_ok_or_should_return_ok_with_wrapped_value(self, some: Option[int]) -> None:
+        assert some.ok_or("Failure") == Ok(100)
+
+    # ==========ok_or_else==========
+    def test_ok_or_else_should_return_ok_with_wrapped_value(
+        self, some: Option[int]
+    ) -> None:
+        assert some.ok_or_else(lambda: "Failure") == Ok(100)
+
+    def test_ok_or_else_should_not_call_err(self, some: Option[int]) -> None:
+        err = mock.Mock()
+        some.ok_or_else(err)
+        err.assert_not_called()
+
 
 class TestNothing:
     # ==========and_==========
@@ -259,3 +274,18 @@ class TestNothing:
         f = mock.Mock()
         nothing.map_or_else(lambda: 0, f)
         f.assert_not_called()
+
+    # ==========ok_or==========
+    def test_ok_or_should_return_err_with_err(self, nothing: Option[int]) -> None:
+        assert nothing.ok_or("Failure") == Err("Failure")
+
+    # ==========ok_or_else==========
+    def test_ok_or_else_should_return_err_with_result_of_err(
+        self, nothing: Option[int]
+    ) -> None:
+        assert nothing.ok_or_else(lambda: "Failure") == Err("Failure")
+
+    def test_ok_or_else_should_call_err(self, nothing: Option[int]) -> None:
+        err = mock.Mock()
+        nothing.ok_or_else(err)
+        err.assert_called_once()

@@ -74,6 +74,14 @@ class _Option[T](ABC):
     def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
         """Returns the result of `default` if the option is `Nothing`, otherwise calls `f` with the wrapped value and returns the result."""
 
+    @abstractmethod
+    def ok_or[E](self, err: E) -> Result[T, E]:
+        """Transforms `Option[T]` into `Result[T, E]`, mapping `Some(v)` to `Ok(v)` and `Nothing` to `Err(err)`."""
+
+    @abstractmethod
+    def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
+        """Transforms `Option[T]` into `Result[T, E]`, mapping `Some(v)` to `Ok(v)` and `Nothing` to `Err(err())`."""
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -129,6 +137,14 @@ class Some[T](_Option[T]):
     def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
         return f(self.value)
 
+    @override
+    def ok_or[E](self, err: E) -> Result[T, E]:
+        return Ok(self.value)
+
+    @override
+    def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
+        return Ok(self.value)
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -182,6 +198,14 @@ class Nothing[T = Any](_Option[T]):
     @override
     def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
         return default()
+
+    @override
+    def ok_or[E](self, err: E) -> Result[T, E]:
+        return Err(err)
+
+    @override
+    def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
+        return Err(err())
 
 
 # ==========================================
