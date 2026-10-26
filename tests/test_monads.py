@@ -445,6 +445,36 @@ class TestOk:
         ok.inspect_err(f)
         f.assert_not_called()
 
+    # ==========is_err==========
+    def test_is_err_should_return_false(self, ok: Result[int, str]) -> None:
+        assert ok.is_err() is False
+
+    # ==========is_err_and==========
+    def test_is_err_and_should_return_false(self, ok: Result[int, str]) -> None:
+        assert ok.is_err_and(lambda _: True) is False
+
+    def test_is_err_and_should_not_call_predicate(self, ok: Result[int, str]) -> None:
+        predicate = mock.Mock()
+        ok.is_err_and(predicate)
+        predicate.assert_not_called()
+
+    # ==========is_ok==========
+    def test_is_ok_should_return_true(self, ok: Result[int, str]) -> None:
+        assert ok.is_ok() is True
+
+    # ==========is_ok_and==========
+    def test_is_ok_and_should_return_result_of_predicate(
+        self, ok: Result[int, str]
+    ) -> None:
+        assert ok.is_ok_and(lambda _: False) is False
+
+    def test_is_ok_and_should_call_predicate_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        predicate = mock.Mock()
+        ok.is_ok_and(predicate)
+        predicate.assert_called_once_with(100)
+
     # ==========ok==========
     def test_ok_should_return_some_with_wrapped_value(
         self, ok: Result[int, str]
@@ -530,6 +560,36 @@ class TestErr:
         f = mock.Mock()
         err.inspect_err(f)
         f.assert_called_once_with("Failure")
+
+    # ==========is_err==========
+    def test_is_err_should_return_true(self, err: Result[int, str]) -> None:
+        assert err.is_err() is True
+
+    # ==========is_err_and==========
+    def test_is_err_and_should_return_result_of_predicate(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.is_err_and(lambda _: False) is False
+
+    def test_is_err_should_call_predicate_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        predicate = mock.Mock()
+        err.is_err_and(predicate)
+        predicate.assert_called_once_with("Failure")
+
+    # ==========is_ok==========
+    def test_is_ok_should_return_false(self, err: Result[int, str]) -> None:
+        assert err.is_ok() is False
+
+    # ==========is_ok_and==========
+    def test_is_ok_and_should_return_false(self, err: Result[int, str]) -> None:
+        assert err.is_ok_and(lambda _: True) is False
+
+    def test_is_ok_and_should_not_call_predicate(self, err: Result[int, str]) -> None:
+        predicate = mock.Mock()
+        err.is_ok_and(predicate)
+        predicate.assert_not_called()
 
     # ==========ok==========
     def test_ok_should_return_nothing(self, err: Result[int, str]) -> None:

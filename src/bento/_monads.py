@@ -320,6 +320,22 @@ class _Result[T, E](ABC):
         """
 
     @abstractmethod
+    def is_err(self) -> bool:
+        """Returns `True` if the result is an `Err`, otherwise returns `False`."""
+
+    @abstractmethod
+    def is_err_and(self, predicate: Callable[[E], bool]) -> bool:
+        """Returns `False` if the result is an `Ok`, otherwise calls `predicate` with the wrapped value and returns the result."""
+
+    @abstractmethod
+    def is_ok(self) -> bool:
+        """Returns `True` if the result is an `Ok`, otherwise returns `False`."""
+
+    @abstractmethod
+    def is_ok_and(self, predicate: Callable[[T], bool]) -> bool:
+        """Returns `False` if the result is an `Err`, otherwise calls `predicate` with the wrapped value and returns the result."""
+
+    @abstractmethod
     def ok(self) -> Option[T]:
         """Transforms `Result[T, E]` into `Option[T]`, mapping `Ok(t)` to `Some(t)` and `Err(e)` to `Nothing`."""
 
@@ -381,6 +397,22 @@ class Ok[T, E = Any](_Result[T, E]):
         return self
 
     @override
+    def is_err(self) -> bool:
+        return False
+
+    @override
+    def is_err_and(self, predicate: Callable[[E], bool]) -> bool:
+        return False
+
+    @override
+    def is_ok(self) -> bool:
+        return True
+
+    @override
+    def is_ok_and(self, predicate: Callable[[T], bool]) -> bool:
+        return predicate(self.value)
+
+    @override
     def ok(self) -> Option[T]:
         return Some(self.value)
 
@@ -434,6 +466,22 @@ class Err[E, T = Any](_Result[T, E]):
     def inspect_err(self, f: Callable[[E], Any]) -> Result[T, E]:
         f(self.value)
         return self
+
+    @override
+    def is_err(self) -> bool:
+        return True
+
+    @override
+    def is_err_and(self, predicate: Callable[[E], bool]) -> bool:
+        return predicate(self.value)
+
+    @override
+    def is_ok(self) -> bool:
+        return False
+
+    @override
+    def is_ok_and(self, predicate: Callable[[T], bool]) -> bool:
+        return False
 
     @override
     def ok(self) -> Option[T]:
