@@ -39,6 +39,13 @@ class _Option[T](ABC):
             - `Nothing` if `predicate` returns `False`
         """
 
+    @abstractmethod
+    def inspect(self, f: Callable[[T], Any]) -> Option[T]:
+        """
+        Calls `f` with the wrapped value if the option is `Some`.
+        Returns the original option.
+        """
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -61,6 +68,11 @@ class Some[T](_Option[T]):
     def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
         return self if predicate(self.value) else Nothing()
 
+    @override
+    def inspect(self, f: Callable[[T], Any]) -> Option[T]:
+        f(self.value)
+        return self
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -81,6 +93,10 @@ class Nothing[T = Any](_Option[T]):
 
     @override
     def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
+        return self
+
+    @override
+    def inspect(self, f: Callable[[T], Any]) -> Option[T]:
         return self
 
 

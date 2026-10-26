@@ -65,6 +65,15 @@ class TestSome:
         some.filter(predicate)
         predicate.assert_called_once_with(100)
 
+    # ==========inspect==========
+    def test_inspect_should_return_self(self, some: Option[int]) -> None:
+        assert some.inspect(print) is some
+
+    def test_inspect_should_call_f_with_wrapped_value(self, some: Option[int]) -> None:
+        f = mock.Mock()
+        some.inspect(f)
+        f.assert_called_once_with(100)
+
 
 class TestNothing:
     # ==========and_==========
@@ -104,3 +113,12 @@ class TestNothing:
         predicate = mock.Mock()
         nothing.filter(predicate)
         predicate.assert_not_called()
+
+    # ==========inspect==========
+    def test_inspect_should_return_nothing(self, nothing: Option[int]) -> None:
+        assert nothing.inspect(print) is nothing
+
+    def test_inspect_should_not_call_f(self, nothing: Option[int]) -> None:
+        f = mock.Mock()
+        nothing.inspect(f)
+        f.assert_not_called()
