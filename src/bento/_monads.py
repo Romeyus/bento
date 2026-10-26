@@ -62,6 +62,18 @@ class _Option[T](ABC):
     def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
         """Returns `True` if the option is a `Some` and the the wrapped value matches `predicate`, otherwise returns `False`."""
 
+    @abstractmethod
+    def map[U](self, f: Callable[[T], U]) -> Option[U]:
+        """Maps an `Option[T]` to `Option[U]` by applying `f` to the wrapped value (if `Some`), otherwise returns `Nothing`."""
+
+    @abstractmethod
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        """Returns `default` if the option is `Nothing`, otherwise calls `f` with the wrapped value and returns the result."""
+
+    @abstractmethod
+    def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
+        """Returns the result of `default` if the option is `Nothing`, otherwise calls `f` with the wrapped value and returns the result."""
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -105,6 +117,18 @@ class Some[T](_Option[T]):
     def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
         return predicate(self.value)
 
+    @override
+    def map[U](self, f: Callable[[T], U]) -> Option[U]:
+        return Some(f(self.value))
+
+    @override
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        return f(self.value)
+
+    @override
+    def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
+        return f(self.value)
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -146,6 +170,18 @@ class Nothing[T = Any](_Option[T]):
     @override
     def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
         return False
+
+    @override
+    def map[U](self, f: Callable[[T], U]) -> Option[U]:
+        return cast(Option[U], self)
+
+    @override
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        return default
+
+    @override
+    def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U]) -> U:
+        return default()
 
 
 # ==========================================

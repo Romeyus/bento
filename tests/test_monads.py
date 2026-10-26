@@ -120,6 +120,40 @@ class TestSome:
         some.is_some_and(predicate)
         predicate.assert_called_once_with(100)
 
+    # ==========map==========
+    def test_map_should_return_some_with_result_of_f(self, some: Option[int]) -> None:
+        assert some.map(lambda v: v * 2) == Some(200)
+
+    def test_map_should_call_f_with_wrapped_value(self, some: Option[int]) -> None:
+        f = mock.Mock()
+        some.map(f)
+        f.assert_called_once_with(100)
+
+    # ==========map_or==========
+    def test_map_or_should_return_result_of_f(self, some: Option[int]) -> None:
+        assert some.map_or(0, lambda v: v * 2) == 200
+
+    def test_map_or_should_call_f_with_wrapped_value(self, some: Option[int]) -> None:
+        f = mock.Mock()
+        some.map_or(0, f)
+        f.assert_called_once_with(100)
+
+    # ==========map_or_else==========
+    def test_map_or_else_should_return_result_of_f(self, some: Option[int]) -> None:
+        assert some.map_or_else(lambda: 0, lambda v: v * 2) == 200
+
+    def test_map_or_else_should_call_f_with_wrapped_value(
+        self, some: Option[int]
+    ) -> None:
+        f = mock.Mock()
+        some.map_or_else(lambda: 0, f)
+        f.assert_called_once_with(100)
+
+    def test_map_or_else_should_not_call_default(self, some: Option[int]) -> None:
+        default = mock.Mock()
+        some.map_or_else(default, lambda v: v * 2)
+        default.assert_not_called()
+
 
 class TestNothing:
     # ==========and_==========
@@ -196,3 +230,32 @@ class TestNothing:
         predicate = mock.Mock()
         nothing.is_some_and(predicate)
         predicate.assert_not_called()
+
+    # ==========map==========
+    def test_map_should_return_nothing(self, nothing: Option[int]) -> None:
+        assert nothing.map(lambda v: v * 2) is nothing
+
+    # ==========map_or==========
+    def test_map_or_should_return_default(self, nothing: Option[int]) -> None:
+        assert nothing.map_or(0, lambda v: v * 2) == 0
+
+    def test_map_or_should_not_call_f(self, nothing: Option[int]) -> None:
+        f = mock.Mock()
+        nothing.map_or(0, f)
+        f.assert_not_called()
+
+    # ==========map_or_else==========
+    def test_map_or_else_should_return_result_of_default(
+        self, nothing: Option[int]
+    ) -> None:
+        assert nothing.map_or_else(lambda: 0, lambda v: v * 2) == 0
+
+    def test_map_or_else_should_call_default(self, nothing: Option[int]) -> None:
+        default = mock.Mock()
+        nothing.map_or_else(default, lambda v: v * 2)
+        default.assert_called_once()
+
+    def test_map_or_else_should_not_call_f(self, nothing: Option[int]) -> None:
+        f = mock.Mock()
+        nothing.map_or_else(lambda: 0, f)
+        f.assert_not_called()
