@@ -189,6 +189,25 @@ class TestSome:
         some.or_else(f)
         f.assert_not_called()
 
+    # ==========unwrap==========
+    def test_unwrap_should_return_contained_value(self, some: Option[int]) -> None:
+        assert some.unwrap() == 100
+
+    # ==========unwrap_or==========
+    def test_unwrap_or_should_return_contained_value(self, some: Option[int]) -> None:
+        assert some.unwrap_or(0) == 100
+
+    # ==========unwrap_or_else==========
+    def test_unwrap_or_else_should_return_contained_value(
+        self, some: Option[int]
+    ) -> None:
+        assert some.unwrap_or_else(lambda: 0) == 100
+
+    def test_unwrap_or_else_should_not_call_f(self, some: Option[int]) -> None:
+        f = mock.Mock()
+        some.unwrap_or_else(f)
+        f.assert_not_called()
+
 
 class TestNothing:
     # ==========and_==========
@@ -330,4 +349,24 @@ class TestNothing:
     def test_or_else_should_call_f(self, nothing: Option[int]) -> None:
         f = mock.Mock()
         nothing.or_else(f)
+        f.assert_called_once()
+
+    # ==========unwrap==========
+    def test_unwrap_should_raise_Panic_exception(self, nothing: Option[int]) -> None:
+        with pytest.raises(Panic):
+            nothing.unwrap()
+
+    # ==========unwrap_or==========
+    def test_unwrap_or_should_return_default(self, nothing: Option[int]) -> None:
+        assert nothing.unwrap_or(0) == 0
+
+    # ==========unwrap_or_else==========
+    def test_unwrap_or_else_should_return_result_of_f(
+        self, nothing: Option[int]
+    ) -> None:
+        assert nothing.unwrap_or_else(lambda: 0) == 0
+
+    def test_unwrap_or_else_should_call_f(self, nothing: Option[int]) -> None:
+        f = mock.Mock()
+        nothing.unwrap_or_else(f)
         f.assert_called_once()

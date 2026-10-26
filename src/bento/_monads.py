@@ -90,6 +90,21 @@ class _Option[T](ABC):
     def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
         """Returns the option if it contains a value, otherwise calls `f` and returns the result."""
 
+    @abstractmethod
+    def unwrap(self) -> T:
+        """
+        Returns the contained `Some` value, consuming the `self` value.
+        Raises a `Panic` exception if the option is `Nothing`.
+        """
+
+    @abstractmethod
+    def unwrap_or(self, default: T) -> T:
+        """Returns the contained `Some` value or `default`."""
+
+    @abstractmethod
+    def unwrap_or_else(self, f: Callable[[], T]) -> T:
+        """Returns the contained `Some` value or the result of `f`."""
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -161,6 +176,18 @@ class Some[T](_Option[T]):
     def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
         return self
 
+    @override
+    def unwrap(self) -> T:
+        return self.value
+
+    @override
+    def unwrap_or(self, default: T) -> T:
+        return self.value
+
+    @override
+    def unwrap_or_else(self, f: Callable[[], T]) -> T:
+        return self.value
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -229,6 +256,18 @@ class Nothing[T = Any](_Option[T]):
 
     @override
     def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
+        return f()
+
+    @override
+    def unwrap(self) -> T:
+        raise Panic("Called Option.unwrap() on Nothing")
+
+    @override
+    def unwrap_or(self, default: T) -> T:
+        return default
+
+    @override
+    def unwrap_or_else(self, f: Callable[[], T]) -> T:
         return f()
 
 
