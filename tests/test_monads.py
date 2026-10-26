@@ -47,6 +47,24 @@ class TestSome:
     def test_expect_should_return_contained_value(self, some: Option[int]) -> None:
         assert some.expect("Testing expect") == 100
 
+    # ==========filter==========
+    def test_filter_should_return_self_if_predicate_returns_true(
+        self, some: Option[int]
+    ) -> None:
+        assert some.filter(lambda _: True) is some
+
+    def test_filter_should_return_nothing_if_predicate_returns_false(
+        self, some: Option[int]
+    ) -> None:
+        assert some.filter(lambda _: False) == Nothing()
+
+    def test_filter_should_call_predicate_with_wrapped_value(
+        self, some: Option[int]
+    ) -> None:
+        predicate = mock.Mock()
+        some.filter(predicate)
+        predicate.assert_called_once_with(100)
+
 
 class TestNothing:
     # ==========and_==========
@@ -77,3 +95,12 @@ class TestNothing:
     ) -> None:
         with pytest.raises(Panic, match="Testing expect"):
             nothing.expect("Testing expect")
+
+    # ==========filter==========
+    def test_filter_should_return_nothing(self, nothing: Option[int]) -> None:
+        assert nothing.filter(lambda _: True) is nothing
+
+    def test_filter_should_not_call_predicate(self, nothing: Option[int]) -> None:
+        predicate = mock.Mock()
+        nothing.filter(predicate)
+        predicate.assert_not_called()

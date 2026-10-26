@@ -31,6 +31,14 @@ class _Option[T](ABC):
         Raises a `Panic` exception if the option is `Nothing` with a custom message provided by `msg`.
         """
 
+    @abstractmethod
+    def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
+        """
+        Returns `Nothing` if the option is `Nothing`, otherwise calls `predicate` with the wrapped value and returns:
+            - `Some[T]` if `predicate` returns `True` (where `T` is the wrapped value), and
+            - `Nothing` if `predicate` returns `False`
+        """
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -49,6 +57,10 @@ class Some[T](_Option[T]):
     def expect(self, msg: str) -> T:
         return self.value
 
+    @override
+    def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
+        return self if predicate(self.value) else Nothing()
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -66,6 +78,10 @@ class Nothing[T = Any](_Option[T]):
     @override
     def expect(self, msg: str) -> T:
         raise Panic(f"Called Option.expect() on Nothing, {msg}")
+
+    @override
+    def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
+        return self
 
 
 # ==========================================
