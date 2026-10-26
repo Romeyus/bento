@@ -233,7 +233,7 @@ class TestNothing:
         f.assert_not_called()
 
     # ==========expect==========
-    def test_expect_should_raise_Panic_exception_with_msg(
+    def test_expect_should_raise_UnwrapError_with_msg(
         self, nothing: Option[int]
     ) -> None:
         with pytest.raises(UnwrapError, match="Testing expect"):
@@ -352,7 +352,7 @@ class TestNothing:
         f.assert_called_once()
 
     # ==========unwrap==========
-    def test_unwrap_should_raise_Panic_exception(self, nothing: Option[int]) -> None:
+    def test_unwrap_should_raise_UnwrapError(self, nothing: Option[int]) -> None:
         with pytest.raises(UnwrapError):
             nothing.unwrap()
 
