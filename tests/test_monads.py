@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from bento import Err, Nothing, Ok, Option, Some, UnwrapError
+from bento import Err, Nothing, Ok, Option, Result, Some, UnwrapError
 
 
 # ==========================================
@@ -17,6 +17,16 @@ def some() -> Option[int]:
 @pytest.fixture
 def nothing() -> Option[int]:
     return Nothing()
+
+
+@pytest.fixture
+def ok() -> Result[int, str]:
+    return Ok(100)
+
+
+@pytest.fixture
+def err() -> Result[int, str]:
+    return Err("Failure")
 
 
 # ==========================================
@@ -370,3 +380,53 @@ class TestNothing:
         f = mock.Mock()
         nothing.unwrap_or_else(f)
         f.assert_called_once()
+
+
+# ==========================================
+# ===            Results                 ===
+# ==========================================
+class TestOk:
+    # ==========unwrap==========
+    def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
+        assert ok.unwrap() == 100
+
+    # ==========unwrap_or==========
+    def test_unwrap_or_should_return_contained_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        assert ok.unwrap_or(0) == 100
+
+    # ==========unwrap_or_else==========
+    def test_unwrap_or_else_should_return_contained_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        assert ok.unwrap_or_else(len) == 100
+
+    def test_unwrap_or_else_should_not_call_f(self, ok: Result[int, str]) -> None:
+        f = mock.Mock()
+        ok.unwrap_or_else(f)
+        f.assert_not_called()
+
+
+class TestErr:
+    # ==========unwrap==========
+    def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:
+        with pytest.raises(UnwrapError):
+            err.unwrap()
+
+    # ==========unwrap_or==========
+    def test_unwrap_or_should_return_default(self, err: Result[int, str]) -> None:
+        assert err.unwrap_or(0) == 0
+
+    # ==========unwrap_or_else==========
+    def test_unwrap_or_else_should_return_result_of_f(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.unwrap_or_else(len) == 7
+
+    def test_unwrap_or_else_should_call_f_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        err.unwrap_or_else(f)
+        f.assert_called_once_with("Failure")

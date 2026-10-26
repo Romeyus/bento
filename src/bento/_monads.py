@@ -278,7 +278,21 @@ class Nothing[T = Any](_Option[T]):
 # ==========================================
 # ===            Results                 ===
 # ==========================================
-class _Result[T, E](ABC): ...
+class _Result[T, E](ABC):
+    @abstractmethod
+    def unwrap(self) -> T:
+        """
+        Returns the contained `Ok` value, consuming the `self` value.
+        Raises an `UnwrapError` if the result is an `Err`.
+        """
+
+    @abstractmethod
+    def unwrap_or(self, default: T) -> T:
+        """Returns the contained `Ok` value or `default`."""
+
+    @abstractmethod
+    def unwrap_or_else(self, f: Callable[[E], T]) -> T:
+        """Returns the contained `Ok` value or the result of `f(err)` where `err` is the contained `Err` value."""
 
 
 @final
@@ -286,8 +300,32 @@ class _Result[T, E](ABC): ...
 class Ok[T, E = Any](_Result[T, E]):
     value: T
 
+    @override
+    def unwrap(self) -> T:
+        return self.value
+
+    @override
+    def unwrap_or(self, default: T) -> T:
+        return self.value
+
+    @override
+    def unwrap_or_else(self, f: Callable[[E], T]) -> T:
+        return self.value
+
 
 @final
 @dataclass(frozen=True, slots=True)
 class Err[E, T = Any](_Result[T, E]):
     value: E
+
+    @override
+    def unwrap(self) -> T:
+        raise UnwrapError(f"Called Result.unwrap() on an {self!r}")
+
+    @override
+    def unwrap_or(self, default: T) -> T:
+        return default
+
+    @override
+    def unwrap_or_else(self, f: Callable[[E], T]) -> T:
+        return f(self.value)
