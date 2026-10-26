@@ -287,6 +287,13 @@ class _Result[T, E](ABC):
         """
 
     @abstractmethod
+    def unwrap_err(self) -> E:
+        """
+        Returns the contained `Err` value, consuming the `self` value.
+        Raises an `UnwrapError` if the result is an `Ok`.
+        """
+
+    @abstractmethod
     def unwrap_or(self, default: T) -> T:
         """Returns the contained `Ok` value or `default`."""
 
@@ -305,6 +312,10 @@ class Ok[T, E = Any](_Result[T, E]):
         return self.value
 
     @override
+    def unwrap_err(self) -> E:
+        raise UnwrapError(f"Called Result.unwrap_err() on an {self!r}")
+
+    @override
     def unwrap_or(self, default: T) -> T:
         return self.value
 
@@ -321,6 +332,10 @@ class Err[E, T = Any](_Result[T, E]):
     @override
     def unwrap(self) -> T:
         raise UnwrapError(f"Called Result.unwrap() on an {self!r}")
+
+    @override
+    def unwrap_err(self) -> E:
+        return self.value
 
     @override
     def unwrap_or(self, default: T) -> T:

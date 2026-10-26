@@ -390,6 +390,11 @@ class TestOk:
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.unwrap() == 100
 
+    # ==========unwrap_err==========
+    def test_unwrap_err_should_raise_UnwrapError(self, ok: Result[int, str]) -> None:
+        with pytest.raises(UnwrapError):
+            ok.unwrap_err()
+
     # ==========unwrap_or==========
     def test_unwrap_or_should_return_contained_value(
         self, ok: Result[int, str]
@@ -413,6 +418,12 @@ class TestErr:
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:
         with pytest.raises(UnwrapError):
             err.unwrap()
+
+    # ==========unwrap_err==========
+    def test_unwrap_err_should_return_contained_value(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.unwrap_err() == "Failure"
 
     # ==========unwrap_or==========
     def test_unwrap_or_should_return_default(self, err: Result[int, str]) -> None:
