@@ -74,6 +74,30 @@ class TestSome:
         some.inspect(f)
         f.assert_called_once_with(100)
 
+    # ==========is_nothing==========
+    def test_is_nothing_should_return_false(self, some: Option[int]) -> None:
+        assert some.is_nothing() is False
+
+    # ==========is_nothing_or==========
+    @pytest.mark.parametrize(
+        "result",
+        [
+            [True],
+            [False],
+        ],
+    )
+    def test_is_nothing_or_should_return_result_of_predicate(
+        self, some: Option[int], result: bool
+    ) -> None:
+        assert some.is_nothing_or(lambda _: result) is result
+
+    def test_is_nothing_or_should_call_predicate_with_wrapped_value(
+        self, some: Option[int]
+    ) -> None:
+        predicate = mock.Mock()
+        some.is_nothing_or(predicate)
+        predicate.assert_called_once_with(100)
+
 
 class TestNothing:
     # ==========and_==========
@@ -122,3 +146,18 @@ class TestNothing:
         f = mock.Mock()
         nothing.inspect(f)
         f.assert_not_called()
+
+    # ==========is_nothing==========
+    def test_is_nothing_should_return_true(self, nothing: Option[int]) -> None:
+        assert nothing.is_nothing() is True
+
+    # ==========is_nothing_or==========
+    def test_is_nothing_or_should_return_true(self, nothing: Option[int]) -> None:
+        assert nothing.is_nothing_or(lambda _: False) is True
+
+    def test_is_nothing_or_should_not_call_predicate(
+        self, nothing: Option[int]
+    ) -> None:
+        predicate = mock.Mock()
+        nothing.is_nothing_or(predicate)
+        predicate.assert_not_called()

@@ -46,6 +46,14 @@ class _Option[T](ABC):
         Returns the original option.
         """
 
+    @abstractmethod
+    def is_nothing(self) -> bool:
+        """Returns `True` if the option is `Nothing`, otherwise returns `False`."""
+
+    @abstractmethod
+    def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
+        """Returns `True` if the option is `Nothing`, otherwise calls `predicate` with the wrapped value and returns the result."""
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -73,6 +81,14 @@ class Some[T](_Option[T]):
         f(self.value)
         return self
 
+    @override
+    def is_nothing(self) -> bool:
+        return False
+
+    @override
+    def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
+        return predicate(self.value)
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -98,6 +114,14 @@ class Nothing[T = Any](_Option[T]):
     @override
     def inspect(self, f: Callable[[T], Any]) -> Option[T]:
         return self
+
+    @override
+    def is_nothing(self) -> bool:
+        return True
+
+    @override
+    def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
+        return True
 
 
 # ==========================================
