@@ -169,6 +169,26 @@ class TestSome:
         some.ok_or_else(err)
         err.assert_not_called()
 
+    # ==========or_==========
+    @pytest.mark.parametrize(
+        "optb",
+        [
+            [Some(200)],
+            [Nothing()],
+        ],
+    )
+    def test_or_should_return_self(self, some: Option[int], optb: Option[int]) -> None:
+        assert some.or_(optb) is some
+
+    # ==========or_else==========
+    def test_or_else_should_return_self(self, some: Option[int]) -> None:
+        assert some.or_else(lambda: Nothing()) is some
+
+    def test_or_else_should_not_call_f(self, some: Option[int]) -> None:
+        f = mock.Mock()
+        some.or_else(f)
+        f.assert_not_called()
+
 
 class TestNothing:
     # ==========and_==========
@@ -289,3 +309,25 @@ class TestNothing:
         err = mock.Mock()
         nothing.ok_or_else(err)
         err.assert_called_once()
+
+    # ==========or_==========
+    @pytest.mark.parametrize(
+        "optb",
+        [
+            [Some(200)],
+            [Nothing()],
+        ],
+    )
+    def test_or_should_return_optb(
+        self, nothing: Option[int], optb: Option[int]
+    ) -> None:
+        assert nothing.or_(optb) is optb
+
+    # ==========or_else==========
+    def test_or_else_should_return_result_of_f(self, nothing: Option[int]) -> None:
+        assert nothing.or_else(lambda: Some(200)) == Some(200)
+
+    def test_or_else_should_call_f(self, nothing: Option[int]) -> None:
+        f = mock.Mock()
+        nothing.or_else(f)
+        f.assert_called_once()

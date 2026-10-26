@@ -35,7 +35,7 @@ class _Option[T](ABC):
     def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
         """
         Returns `Nothing` if the option is `Nothing`, otherwise calls `predicate` with the wrapped value and returns:
-            - `Some[T]` if `predicate` returns `True` (where `T` is the wrapped value), and
+            - `Some(v)` if `predicate` returns `True` (where `v` is the wrapped value), and
             - `Nothing` if `predicate` returns `False`
         """
 
@@ -81,6 +81,14 @@ class _Option[T](ABC):
     @abstractmethod
     def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
         """Transforms `Option[T]` into `Result[T, E]`, mapping `Some(v)` to `Ok(v)` and `Nothing` to `Err(err())`."""
+
+    @abstractmethod
+    def or_(self, optb: Option[T]) -> Option[T]:
+        """Returns the option if it contains a value, otherwise returns `optb`."""
+
+    @abstractmethod
+    def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
+        """Returns the option if it contains a value, otherwise calls `f` and returns the result."""
 
 
 @final
@@ -145,6 +153,14 @@ class Some[T](_Option[T]):
     def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
         return Ok(self.value)
 
+    @override
+    def or_(self, optb: Option[T]) -> Option[T]:
+        return self
+
+    @override
+    def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
+        return self
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -206,6 +222,14 @@ class Nothing[T = Any](_Option[T]):
     @override
     def ok_or_else[E](self, err: Callable[[], E]) -> Result[T, E]:
         return Err(err())
+
+    @override
+    def or_(self, optb: Option[T]) -> Option[T]:
+        return optb
+
+    @override
+    def or_else(self, f: Callable[[], Option[T]]) -> Option[T]:
+        return f()
 
 
 # ==========================================
