@@ -410,6 +410,17 @@ class TestOk:
         ok.and_then(f)
         f.assert_called_once_with(100)
 
+    # ==========expect==========
+    def test_expect_should_return_contained_value(self, ok: Result[int, str]) -> None:
+        assert ok.expect("Testing expect") == 100
+
+    # ==========expect_err==========
+    def test_expect_err_should_raise_UnwrapError_with_msg(
+        self, ok: Result[int, str]
+    ) -> None:
+        with pytest.raises(UnwrapError, match="Testing expect_err"):
+            ok.expect_err("Testing expect_err")
+
     # ==========unwrap==========
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.unwrap() == 100
@@ -450,6 +461,19 @@ class TestErr:
         f = mock.Mock()
         err.and_then(f)
         f.assert_not_called()
+
+    # ==========expect==========
+    def test_expect_should_raise_UnwrapError_with_msg(
+        self, err: Result[int, str]
+    ) -> None:
+        with pytest.raises(UnwrapError, match="Testing expect"):
+            err.expect("Testing expect")
+
+    # ==========expect_err==========
+    def test_expect_err_should_return_contained_value(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.expect_err("Testing expect_err") == "Failure"
 
     # ==========unwrap==========
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:

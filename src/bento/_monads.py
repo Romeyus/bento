@@ -288,6 +288,20 @@ class _Result[T, E](ABC):
         """Returns `self` if the option is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
 
     @abstractmethod
+    def expect(self, msg: str) -> T:
+        """
+        Returns the contained `Ok` value, consuming the `self` value.
+        Raises an `UnwrapError` if the option is an `Err` with a custom message provided by `msg`.
+        """
+
+    @abstractmethod
+    def expect_err(self, msg: str) -> E:
+        """
+        Returns the contained `Err` value, consuming the `self` value.
+        Raises an `UnwrapError` if the option is an `Ok` with a custom message provided by `msg`.
+        """
+
+    @abstractmethod
     def unwrap(self) -> T:
         """
         Returns the contained `Ok` value, consuming the `self` value.
@@ -324,6 +338,14 @@ class Ok[T, E = Any](_Result[T, E]):
         return f(self.value)
 
     @override
+    def expect(self, msg: str) -> T:
+        return self.value
+
+    @override
+    def expect_err(self, msg: str) -> E:
+        raise UnwrapError(f"Called Result.unwrap_err() on an {self!r}, {msg}")
+
+    @override
     def unwrap(self) -> T:
         return self.value
 
@@ -352,6 +374,14 @@ class Err[E, T = Any](_Result[T, E]):
     @override
     def and_then[U](self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
         return cast(Result[U, E], self)
+
+    @override
+    def expect(self, msg: str) -> T:
+        raise UnwrapError(f"Called Result.expect() on an {self!r}, {msg}")
+
+    @override
+    def expect_err(self, msg: str) -> E:
+        return self.value
 
     @override
     def unwrap(self) -> T:
