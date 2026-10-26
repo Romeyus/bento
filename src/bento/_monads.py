@@ -54,6 +54,14 @@ class _Option[T](ABC):
     def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
         """Returns `True` if the option is `Nothing`, otherwise calls `predicate` with the wrapped value and returns the result."""
 
+    @abstractmethod
+    def is_some(self) -> bool:
+        """Returns `True` if the option is a `Some`, otherwise returns `False`."""
+
+    @abstractmethod
+    def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
+        """Returns `True` if the option is a `Some` and the the wrapped value matches `predicate`, otherwise returns `False`."""
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -89,6 +97,14 @@ class Some[T](_Option[T]):
     def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
         return predicate(self.value)
 
+    @override
+    def is_some(self) -> bool:
+        return True
+
+    @override
+    def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
+        return predicate(self.value)
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -122,6 +138,14 @@ class Nothing[T = Any](_Option[T]):
     @override
     def is_nothing_or(self, predicate: Callable[[T], bool]) -> bool:
         return True
+
+    @override
+    def is_some(self) -> bool:
+        return False
+
+    @override
+    def is_some_and(self, predicate: Callable[[T], bool]) -> bool:
+        return False
 
 
 # ==========================================
