@@ -410,6 +410,10 @@ class TestOk:
         ok.and_then(f)
         f.assert_called_once_with(100)
 
+    # ==========err==========
+    def test_err_should_return_nothing(self, ok: Result[int, str]) -> None:
+        assert ok.err() == Nothing()
+
     # ==========expect==========
     def test_expect_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.expect("Testing expect") == 100
@@ -440,6 +444,12 @@ class TestOk:
         f = mock.Mock()
         ok.inspect_err(f)
         f.assert_not_called()
+
+    # ==========ok==========
+    def test_ok_should_return_some_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        assert ok.ok() == Some(100)
 
     # ==========unwrap==========
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
@@ -482,6 +492,12 @@ class TestErr:
         err.and_then(f)
         f.assert_not_called()
 
+    # ==========err==========
+    def test_err_should_return_some_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.err() == Some("Failure")
+
     # ==========expect==========
     def test_expect_should_raise_UnwrapError_with_msg(
         self, err: Result[int, str]
@@ -514,6 +530,10 @@ class TestErr:
         f = mock.Mock()
         err.inspect_err(f)
         f.assert_called_once_with("Failure")
+
+    # ==========ok==========
+    def test_ok_should_return_nothing(self, err: Result[int, str]) -> None:
+        assert err.ok() == Nothing()
 
     # ==========unwrap==========
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:
