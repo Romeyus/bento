@@ -285,20 +285,34 @@ class _Result[T, E](ABC):
 
     @abstractmethod
     def and_then[U](self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
-        """Returns `self` if the option is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
+        """Returns `self` if the result is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
 
     @abstractmethod
     def expect(self, msg: str) -> T:
         """
         Returns the contained `Ok` value, consuming the `self` value.
-        Raises an `UnwrapError` if the option is an `Err` with a custom message provided by `msg`.
+        Raises an `UnwrapError` if the result is an `Err` with a custom message provided by `msg`.
         """
 
     @abstractmethod
     def expect_err(self, msg: str) -> E:
         """
         Returns the contained `Err` value, consuming the `self` value.
-        Raises an `UnwrapError` if the option is an `Ok` with a custom message provided by `msg`.
+        Raises an `UnwrapError` if the result is an `Ok` with a custom message provided by `msg`.
+        """
+
+    @abstractmethod
+    def inspect(self, f: Callable[[T], Any]) -> Result[T, E]:
+        """
+        Calls `f` with the wrapped value if the result is an `Ok`.
+        Returns the original result.
+        """
+
+    @abstractmethod
+    def inspect_err(self, f: Callable[[E], Any]) -> Result[T, E]:
+        """
+        Calls `f` with the wrapped value if the result is an `Err`.
+        Returns the original result.
         """
 
     @abstractmethod
@@ -346,6 +360,15 @@ class Ok[T, E = Any](_Result[T, E]):
         raise UnwrapError(f"Called Result.unwrap_err() on an {self!r}, {msg}")
 
     @override
+    def inspect(self, f: Callable[[T], Any]) -> Result[T, E]:
+        f(self.value)
+        return self
+
+    @override
+    def inspect_err(self, f: Callable[[E], Any]) -> Result[T, E]:
+        return self
+
+    @override
     def unwrap(self) -> T:
         return self.value
 
@@ -382,6 +405,15 @@ class Err[E, T = Any](_Result[T, E]):
     @override
     def expect_err(self, msg: str) -> E:
         return self.value
+
+    @override
+    def inspect(self, f: Callable[[T], Any]) -> Result[T, E]:
+        return self
+
+    @override
+    def inspect_err(self, f: Callable[[E], Any]) -> Result[T, E]:
+        f(self.value)
+        return self
 
     @override
     def unwrap(self) -> T:

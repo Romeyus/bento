@@ -421,6 +421,26 @@ class TestOk:
         with pytest.raises(UnwrapError, match="Testing expect_err"):
             ok.expect_err("Testing expect_err")
 
+    # ==========inspect==========
+    def test_inspect_should_return_self(self, ok: Result[int, str]) -> None:
+        assert ok.inspect(print) is ok
+
+    def test_inspect_should_call_f_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        ok.inspect(f)
+        f.assert_called_once_with(100)
+
+    # ==========inspect_err==========
+    def test_inspect_err_should_return_self(self, ok: Result[int, str]) -> None:
+        assert ok.inspect_err(print) is ok
+
+    def test_inspect_err_should_not_call_f(self, ok: Result[int, str]) -> None:
+        f = mock.Mock()
+        ok.inspect_err(f)
+        f.assert_not_called()
+
     # ==========unwrap==========
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.unwrap() == 100
@@ -474,6 +494,26 @@ class TestErr:
         self, err: Result[int, str]
     ) -> None:
         assert err.expect_err("Testing expect_err") == "Failure"
+
+    # ==========inspect==========
+    def test_inspect_should_return_self(self, err: Result[int, str]) -> None:
+        assert err.inspect(print) is err
+
+    def test_inspect_should_not_call_f(self, err: Result[int, str]) -> None:
+        f = mock.Mock()
+        err.inspect(f)
+        f.assert_not_called()
+
+    # ==========inspect_err==========
+    def test_inspect_err_should_return_self(self, err: Result[int, str]) -> None:
+        assert err.inspect_err(print) is err
+
+    def test_inspect_err_should_call_f_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        err.inspect_err(f)
+        f.assert_called_once_with("Failure")
 
     # ==========unwrap==========
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:
