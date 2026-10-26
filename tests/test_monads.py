@@ -386,6 +386,30 @@ class TestNothing:
 # ===            Results                 ===
 # ==========================================
 class TestOk:
+    # ==========and_==========
+    @pytest.mark.parametrize(
+        "res",
+        [
+            [Ok("Success")],
+            [Err("Another failure")],
+        ],
+    )
+    def test_and_should_return_res(
+        self, ok: Result[int, str], res: Result[str, str]
+    ) -> None:
+        assert ok.and_(res) is res
+
+    # ==========and_then==========
+    def test_and_then_should_return_result_of_f(self, ok: Result[int, str]) -> None:
+        assert ok.and_then(lambda v: Ok(v * 2)) == Ok(200)
+
+    def test_and_then_should_call_f_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        ok.and_then(f)
+        f.assert_called_once_with(100)
+
     # ==========unwrap==========
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.unwrap() == 100
@@ -414,6 +438,19 @@ class TestOk:
 
 
 class TestErr:
+    # ==========and_==========
+    def test_and_should_return_self(self, err: Result[int, str]) -> None:
+        assert err.and_(Ok("Success")) is err
+
+    # ==========and_then==========
+    def test_and_then_should_return_self(self, err: Result[int, str]) -> None:
+        assert err.and_then(lambda v: Ok("ha" * v)) is err
+
+    def test_and_then_should_not_call_f(self, err: Result[int, str]) -> None:
+        f = mock.Mock()
+        err.and_then(f)
+        f.assert_not_called()
+
     # ==========unwrap==========
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:
         with pytest.raises(UnwrapError):

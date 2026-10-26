@@ -280,6 +280,14 @@ class Nothing[T = Any](_Option[T]):
 # ==========================================
 class _Result[T, E](ABC):
     @abstractmethod
+    def and_[U](self, res: Result[U, E]) -> Result[U, E]:
+        """Returns `self` if the result is an `Err`, otherwise returns `res`."""
+
+    @abstractmethod
+    def and_then[U](self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
+        """Returns `self` if the option is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
+
+    @abstractmethod
     def unwrap(self) -> T:
         """
         Returns the contained `Ok` value, consuming the `self` value.
@@ -308,6 +316,14 @@ class Ok[T, E = Any](_Result[T, E]):
     value: T
 
     @override
+    def and_[U](self, res: Result[U, E]) -> Result[U, E]:
+        return res
+
+    @override
+    def and_then[U](self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
+        return f(self.value)
+
+    @override
     def unwrap(self) -> T:
         return self.value
 
@@ -328,6 +344,14 @@ class Ok[T, E = Any](_Result[T, E]):
 @dataclass(frozen=True, slots=True)
 class Err[E, T = Any](_Result[T, E]):
     value: E
+
+    @override
+    def and_[U](self, res: Result[U, E]) -> Result[U, E]:
+        return cast(Result[U, E], self)
+
+    @override
+    def and_then[U](self, f: Callable[[T], Result[U, E]]) -> Result[U, E]:
+        return cast(Result[U, E], self)
 
     @override
     def unwrap(self) -> T:
