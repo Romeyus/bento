@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from bento import Nothing, Option, Some
+from bento import Nothing, Option, Panic, Some
 
 
 # ==========================================
@@ -43,6 +43,10 @@ class TestSome:
         some.and_then(f)
         f.assert_called_once_with(100)
 
+    # ==========expect==========
+    def test_expect_should_return_contained_value(self, some: Option[int]) -> None:
+        assert some.expect("Testing expect") == 100
+
 
 class TestNothing:
     # ==========and_==========
@@ -66,3 +70,10 @@ class TestNothing:
         f = mock.Mock()
         nothing.and_then(f)
         f.assert_not_called()
+
+    # ==========expect==========
+    def test_expect_should_raise_Panic_exception_with_msg(
+        self, nothing: Option[int]
+    ) -> None:
+        with pytest.raises(Panic, match="Testing expect"):
+            nothing.expect("Testing expect")

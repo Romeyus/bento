@@ -3,6 +3,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, cast, final, override
 
+from bento._exceptions import Panic
+
 # ==========================================
 # ===            Types                   ===
 # ==========================================
@@ -22,6 +24,13 @@ class _Option[T](ABC):
     def and_then[U](self, f: Callable[[T], Option[U]]) -> Option[U]:
         """Returns `Nothing` if the option is `Nothing`, otherwise calls `f` with the wrapped value and returns the result."""
 
+    @abstractmethod
+    def expect(self, msg: str) -> T:
+        """
+        Returns the contained `Some` value, consuming the `self` value.
+        Raises a `Panic` exception if the option is `Nothing` with a custom message provided by `msg`.
+        """
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -36,6 +45,10 @@ class Some[T](_Option[T]):
     def and_then[U](self, f: Callable[[T], Option[U]]) -> Option[U]:
         return f(self.value)
 
+    @override
+    def expect(self, msg: str) -> T:
+        return self.value
+
 
 @final
 @dataclass(frozen=True, slots=True)
@@ -49,6 +62,10 @@ class Nothing[T = Any](_Option[T]):
     @override
     def and_then[U](self, f: Callable[[T], Option[U]]) -> Option[U]:
         return cast(Option[U], self)
+
+    @override
+    def expect(self, msg: str) -> T:
+        raise Panic(f"Called Option.expect() on Nothing, {msg}")
 
 
 # ==========================================
