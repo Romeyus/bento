@@ -1,4 +1,4 @@
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Callable, ItemsView, Iterator, KeysView, Mapping, ValuesView
 from types import MappingProxyType
 from typing import override
 
@@ -22,6 +22,15 @@ class Map[K, V]:
 
     def get_or_else(self, f: Callable[[], V], key: K) -> V:
         return self.get(key).unwrap_or_else(f)
+
+    def items(self) -> ItemsView[K, V]:
+        return self._inner.items()
+
+    def keys(self) -> KeysView[K]:
+        return self._inner.keys()
+
+    def values(self) -> ValuesView[V]:
+        return self._inner.values()
 
     def __contains__(self, key: K) -> bool:
         return key in self._inner

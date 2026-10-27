@@ -84,6 +84,20 @@ class TestMap:
         map.get_or_else(f, "a")
         f.assert_not_called()
 
+    # ==========items==========
+    def test_items_should_return_iterable_of_tuple_of_key_and_value(
+        self, map: Map[str, int]
+    ) -> None:
+        assert list(map.items()) == [("a", 1), ("b", 2), ("c", 3)]
+
+    # ==========keys==========
+    def test_keys_should_return_iterable_of_keys(self, map: Map[str, int]) -> None:
+        assert list(map.keys()) == ["a", "b", "c"]
+
+    # ==========values==========
+    def test_values_should_return_iterable_of_values(self, map: Map[str, int]) -> None:
+        assert list(map.values()) == [1, 2, 3]
+
     # ==========__contains__==========
     @pytest.mark.parametrize(
         "key, expected_value",
