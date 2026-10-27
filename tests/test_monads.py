@@ -526,6 +526,19 @@ class TestOk:
     ) -> None:
         assert ok.ok() == Some(100)
 
+    # ==========or_==========
+    def test_or_should_return_self(self, ok: Result[int, str]) -> None:
+        assert ok.or_(Err("Another failure")) is ok
+
+    # ==========or_else==========
+    def test_or_else_should_return_self(self, ok: Result[int, str]) -> None:
+        assert ok.or_else(lambda v: Err(v.upper())) is ok
+
+    def test_or_else_should_not_call_f(self, ok: Result[int, str]) -> None:
+        f = mock.Mock()
+        ok.or_else(f)
+        f.assert_not_called()
+
     # ==========unwrap==========
     def test_unwrap_should_return_contained_value(self, ok: Result[int, str]) -> None:
         assert ok.unwrap() == 100
@@ -688,6 +701,30 @@ class TestErr:
     # ==========ok==========
     def test_ok_should_return_nothing(self, err: Result[int, str]) -> None:
         assert err.ok() == Nothing()
+
+    # ==========or_==========
+    @pytest.mark.parametrize(
+        "res",
+        [
+            [Ok(200)],
+            [Err(0)],
+        ],
+    )
+    def test_or_should_return_res(
+        self, err: Result[int, str], res: Result[int, int]
+    ) -> None:
+        assert err.or_(res) is res
+
+    # ==========or_else==========
+    def test_or_else_should_return_result_of_f(self, err: Result[int, str]) -> None:
+        assert err.or_else(lambda v: Err(v.upper())) == Err("FAILURE")
+
+    def test_or_else_should_call_f_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        err.or_else(f)
+        f.assert_called_once_with("Failure")
 
     # ==========unwrap==========
     def test_unwrap_should_raise_UnwrapError(self, err: Result[int, str]) -> None:

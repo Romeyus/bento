@@ -356,6 +356,14 @@ class _Result[T, E](ABC):
         """Transforms `Result[T, E]` into `Option[T]`, mapping `Ok(t)` to `Some(t)` and `Err(e)` to `Nothing`."""
 
     @abstractmethod
+    def or_[F](self, res: Result[T, F]) -> Result[T, F]:
+        """Returns the result if it is an `Ok`, otherwise returns `res`."""
+
+    @abstractmethod
+    def or_else[F](self, f: Callable[[E], Result[T, F]]) -> Result[T, F]:
+        """Returns the result if it is an `Ok`, otherwise calls `f` and returns the result."""
+
+    @abstractmethod
     def unwrap(self) -> T:
         """
         Returns the contained `Ok` value, consuming the `self` value.
@@ -449,6 +457,14 @@ class Ok[T, E = Any](_Result[T, E]):
         return Some(self.value)
 
     @override
+    def or_[F](self, res: Result[T, F]) -> Result[T, F]:
+        return cast(Result[T, F], self)
+
+    @override
+    def or_else[F](self, f: Callable[[E], Result[T, F]]) -> Result[T, F]:
+        return cast(Result[T, F], self)
+
+    @override
     def unwrap(self) -> T:
         return self.value
 
@@ -534,6 +550,14 @@ class Err[E, T = Any](_Result[T, E]):
     @override
     def ok(self) -> Option[T]:
         return Nothing()
+
+    @override
+    def or_[F](self, res: Result[T, F]) -> Result[T, F]:
+        return res
+
+    @override
+    def or_else[F](self, f: Callable[[E], Result[T, F]]) -> Result[T, F]:
+        return f(self.value)
 
     @override
     def unwrap(self) -> T:
