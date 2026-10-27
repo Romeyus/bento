@@ -1,4 +1,12 @@
-from collections.abc import Callable, ItemsView, Iterator, KeysView, Mapping, ValuesView
+from collections.abc import (
+    Callable,
+    ItemsView,
+    Iterable,
+    Iterator,
+    KeysView,
+    Mapping,
+    ValuesView,
+)
 from types import MappingProxyType
 from typing import Self, override
 
@@ -18,7 +26,7 @@ class Map[K, V]:
         return type(self)(self._inner)
 
     def get(self, key: K) -> Option[V]:
-        return Some(self._inner[key]) if key in self._inner else Nothing()
+        return Some(self._inner[key]) if key in self else Nothing()
 
     def get_or(self, default: V, key: K) -> V:
         return self.get(key).unwrap_or(default)
@@ -75,10 +83,7 @@ class MutMap[K, V](Map[K, V]):
                 return default
 
     def pop(self, key: K) -> Option[V]:
-        try:
-            return Some(self._inner.pop(key))
-        except KeyError:
-            return Nothing()
+        return Some(self._inner.pop(key)) if key in self else Nothing()
 
     def pop_or(self, default: V, key: K) -> V:
         return self.pop(key).unwrap_or(default)
@@ -88,3 +93,21 @@ class MutMap[K, V](Map[K, V]):
 
     def __setitem__(self, key: K, value: V) -> None:
         self._inner[key] = value
+
+
+# ==========================================
+# ===            Vectors                 ===
+# ==========================================
+class Vec[T]:
+    def __init__(self, iterable: Iterable[T] | None = None) -> None:
+        if iterable is None:
+            iterable = []
+        self._inner = tuple(iterable)
+
+
+class MutVec[T](Vec[T]):
+    @override
+    def __init__(self, iterable: Iterable[T] | None = None) -> None:
+        if iterable is None:
+            iterable = []
+        self._inner = list(iterable)

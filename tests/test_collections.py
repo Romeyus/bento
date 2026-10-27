@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from bento import Map, MutMap, Nothing, Option, Some
+from bento import Map, MutMap, MutVec, Nothing, Option, Some, Vec
 
 
 # ==========================================
@@ -16,6 +16,16 @@ def map() -> Map[str, int]:
 @pytest.fixture
 def mut_map() -> MutMap[str, int]:
     return MutMap({"a": 1, "b": 2, "c": 3})
+
+
+@pytest.fixture
+def vec() -> Vec[str]:
+    return Vec(["a", "b", "c"])
+
+
+@pytest.fixture
+def mut_vec() -> MutVec[str]:
+    return MutVec(["a", "b", "c"])
 
 
 # ==========================================
@@ -296,3 +306,12 @@ class TestMutMap:
     ) -> None:
         mut_map[key] = 0
         assert mut_map.get(key) == Some(0)
+
+
+# ==========================================
+# ===            Vectors                 ===
+# ==========================================
+class TestVec: ...
+
+
+class TestMutVec: ...
