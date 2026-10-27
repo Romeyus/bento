@@ -336,6 +336,22 @@ class _Result[T, E](ABC):
         """Returns `False` if the result is an `Err`, otherwise calls `predicate` with the wrapped value and returns the result."""
 
     @abstractmethod
+    def map[U](self, f: Callable[[T], U]) -> Result[U, E]:
+        """Maps a `Result[T, E]` to `Result[U, E]` by applying `f` to the wrapped value (if `Ok`), otherwise returns `self`."""
+
+    @abstractmethod
+    def map_err[F](self, f: Callable[[E], F]) -> Result[T, F]:
+        """Maps a `Result[T, E]` to `Result[T, F]` by applying `f` to the wrapped value (if `Err`), otherwise returns `self`."""
+
+    @abstractmethod
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        """Returns `default` if the result is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
+
+    @abstractmethod
+    def map_or_else[U](self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
+        """Returns the result of `default` with the wrapped value if the result is an `Err`, otherwise calls `f` with the wrapped value and returns the result."""
+
+    @abstractmethod
     def ok(self) -> Option[T]:
         """Transforms `Result[T, E]` into `Option[T]`, mapping `Ok(t)` to `Some(t)` and `Err(e)` to `Nothing`."""
 
@@ -413,6 +429,22 @@ class Ok[T, E = Any](_Result[T, E]):
         return predicate(self.value)
 
     @override
+    def map[U](self, f: Callable[[T], U]) -> Result[U, E]:
+        return Ok(f(self.value))
+
+    @override
+    def map_err[F](self, f: Callable[[E], F]) -> Result[T, F]:
+        return cast(Result[T, F], self)
+
+    @override
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        return f(self.value)
+
+    @override
+    def map_or_else[U](self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
+        return f(self.value)
+
+    @override
     def ok(self) -> Option[T]:
         return Some(self.value)
 
@@ -482,6 +514,22 @@ class Err[E, T = Any](_Result[T, E]):
     @override
     def is_ok_and(self, predicate: Callable[[T], bool]) -> bool:
         return False
+
+    @override
+    def map[U](self, f: Callable[[T], U]) -> Result[U, E]:
+        return cast(Result[U, E], self)
+
+    @override
+    def map_err[F](self, f: Callable[[E], F]) -> Result[T, F]:
+        return Err(f(self.value))
+
+    @override
+    def map_or[U](self, default: U, f: Callable[[T], U]) -> U:
+        return default
+
+    @override
+    def map_or_else[U](self, default: Callable[[E], U], f: Callable[[T], U]) -> U:
+        return default(self.value)
 
     @override
     def ok(self) -> Option[T]:

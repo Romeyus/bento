@@ -475,6 +475,51 @@ class TestOk:
         ok.is_ok_and(predicate)
         predicate.assert_called_once_with(100)
 
+    # ==========map==========
+    def test_map_should_return_ok_with_result_of_f(self, ok: Result[int, str]) -> None:
+        assert ok.map(lambda v: v * 2) == Ok(200)
+
+    def test_map_should_call_f_with_wrapped_value(self, ok: Result[int, str]) -> None:
+        f = mock.Mock()
+        ok.map(f)
+        f.assert_called_once_with(100)
+
+    # ==========map_err==========
+    def test_map_err_should_return_self(self, ok: Result[int, str]) -> None:
+        assert ok.map_err(str.upper) is ok
+
+    def test_map_err_should_not_call_f(self, ok: Result[int, str]) -> None:
+        f = mock.Mock()
+        ok.map_err(f)
+        f.assert_not_called()
+
+    # ==========map_or==========
+    def test_map_or_should_returnresult_of_f(self, ok: Result[int, str]) -> None:
+        assert ok.map_or(0, lambda v: v * 2) == 200
+
+    def test_map_or_should_call_f_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        ok.map_or(0, f)
+        f.assert_called_once_with(100)
+
+    # ==========map_or_else==========
+    def test_map_or_else_should_return_result_of_f(self, ok: Result[int, str]) -> None:
+        assert ok.map_or_else(len, lambda v: v * 2) == 200
+
+    def test_map_or_else_should_call_f_with_wrapped_value(
+        self, ok: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        ok.map_or_else(len, f)
+        f.assert_called_once_with(100)
+
+    def test_map_or_else_should_not_call_default(self, ok: Result[int, str]) -> None:
+        default = mock.Mock()
+        ok.map_or_else(default, lambda v: v * 2)
+        default.assert_not_called()
+
     # ==========ok==========
     def test_ok_should_return_some_with_wrapped_value(
         self, ok: Result[int, str]
@@ -590,6 +635,55 @@ class TestErr:
         predicate = mock.Mock()
         err.is_ok_and(predicate)
         predicate.assert_not_called()
+
+    # ==========map==========
+    def test_map_should_return_self(self, err: Result[int, str]) -> None:
+        assert err.map(lambda v: v * 2) is err
+
+    def test_map_should_not_call_f(self, err: Result[int, str]) -> None:
+        f = mock.Mock()
+        err.map(f)
+        f.assert_not_called()
+
+    # ==========map_err==========
+    def test_map_err_should_return_err_with_result_of_f(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.map_err(str.upper) == Err("FAILURE")
+
+    def test_map_err_should_call_f_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        f = mock.Mock()
+        err.map_err(f)
+        f.assert_called_once_with("Failure")
+
+    # ==========map_or==========
+    def test_map_or_should_return_default(self, err: Result[int, str]) -> None:
+        assert err.map_or(0, lambda v: v * 2) == 0
+
+    def test_map_or_should_not_call_f(self, err: Result[int, str]) -> None:
+        f = mock.Mock()
+        err.map_or(0, f)
+        f.assert_not_called()
+
+    # ==========map_or_else==========
+    def test_map_or_else_should_return_result_of_default(
+        self, err: Result[int, str]
+    ) -> None:
+        assert err.map_or_else(len, lambda v: v * 2) == 7
+
+    def test_map_or_else_should_call_default_with_wrapped_value(
+        self, err: Result[int, str]
+    ) -> None:
+        default = mock.Mock()
+        err.map_or_else(default, lambda v: v * 2)
+        default.assert_called_once_with("Failure")
+
+    def test_map_or_else_should_not_call_f(self, err: Result[int, str]) -> None:
+        f = mock.Mock()
+        err.map_or_else(len, f)
+        f.assert_not_called()
 
     # ==========ok==========
     def test_ok_should_return_nothing(self, err: Result[int, str]) -> None:
