@@ -48,3 +48,6 @@ class MutMap[K, V](Map[K, V]):
         if mapping is None:
             mapping = {}
         self._inner = dict(mapping)
+
+    def __setitem__(self, key: K, value: V) -> None:
+        self._inner[key] = value

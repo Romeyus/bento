@@ -126,3 +126,14 @@ class TestMutMap:
     # ==========get==========
     def test_get_should_return_nothing_if_mut_map_is_empty(self) -> None:
         assert MutMap[str, int]().get("testing") == Nothing()
+
+    # ==========__setitem__==========
+    @pytest.mark.parametrize(
+        "key",
+        ["a", "b", "c", "d"],
+    )
+    def test__setitem__should_set_new_value_corresponding_to_key(
+        self, mut_map: MutMap[str, int], key: str
+    ) -> None:
+        mut_map[key] = 0
+        assert mut_map.get(key) == Some(0)
