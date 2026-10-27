@@ -311,7 +311,83 @@ class TestMutMap:
 # ==========================================
 # ===            Vectors                 ===
 # ==========================================
-class TestVec: ...
+class TestVec:
+    # ==========get==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, Some("a")],
+            [1, Some("b")],
+            [2, Some("c")],
+            [3, Nothing()],
+            [-1, Some("c")],
+            [-2, Some("b")],
+            [-3, Some("a")],
+            [-4, Nothing()],
+        ],
+    )
+    def test_get_should_return_expected_value(
+        self, vec: Vec[str], index: int, expected_value: Option[str]
+    ) -> None:
+        assert vec.get(index) == expected_value
+
+    def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
+        assert Vec[str]().get(100) == Nothing()
+
+    # ==========get_or==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, "a"],
+            [1, "b"],
+            [2, "c"],
+            [3, "d"],
+            [-1, "c"],
+            [-2, "b"],
+            [-3, "a"],
+            [-4, "d"],
+        ],
+    )
+    def test_get_or_should_return_expected_value(
+        self, vec: Vec[str], index: int, expected_value: str
+    ) -> None:
+        assert vec.get_or("d", index) == expected_value
+
+    # ==========get_or_else==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, "a"],
+            [1, "b"],
+            [2, "c"],
+            [3, "d"],
+            [-1, "c"],
+            [-2, "b"],
+            [-3, "a"],
+            [-4, "d"],
+        ],
+    )
+    def test_get_or_else_should_return_expected_value(
+        self, vec: Vec[str], index: int, expected_value: str
+    ) -> None:
+        assert vec.get_or_else(lambda: "d", index) == expected_value
+
+    def test_get_or_else_should_not_call_f_if_index_in_range(
+        self, vec: Vec[str]
+    ) -> None:
+        f = mock.Mock()
+        vec.get_or_else(f, 0)
+        f.assert_not_called()
+
+    def test_get_or_else_should_call_f_if_index_out_of_range(
+        self, vec: Vec[str]
+    ) -> None:
+        f = mock.Mock()
+        vec.get_or_else(f, 4)
+        f.assert_called_once()
 
 
-class TestMutVec: ...
+class TestMutVec:
+    # ==========get==========
+    def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
+        assert MutVec[str]().get(100) == Nothing()

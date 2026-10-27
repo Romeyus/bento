@@ -104,6 +104,18 @@ class Vec[T]:
             iterable = []
         self._inner = tuple(iterable)
 
+    def get(self, index: int) -> Option[T]:
+        try:
+            return Some(self._inner[index])
+        except IndexError:
+            return Nothing()
+
+    def get_or(self, default: T, index: int) -> T:
+        return self.get(index).unwrap_or(default)
+
+    def get_or_else(self, f: Callable[[], T], index: int) -> T:
+        return self.get(index).unwrap_or_else(f)
+
 
 class MutVec[T](Vec[T]):
     @override
