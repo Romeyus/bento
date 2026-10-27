@@ -74,5 +74,17 @@ class MutMap[K, V](Map[K, V]):
                 self[key] = default
                 return default
 
+    def pop(self, key: K) -> Option[V]:
+        try:
+            return Some(self._inner.pop(key))
+        except KeyError:
+            return Nothing()
+
+    def pop_or(self, default: V, key: K) -> V:
+        return self.pop(key).unwrap_or(default)
+
+    def pop_or_else(self, f: Callable[[], V], key: K) -> V:
+        return self.pop(key).unwrap_or_else(f)
+
     def __setitem__(self, key: K, value: V) -> None:
         self._inner[key] = value

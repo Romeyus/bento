@@ -209,6 +209,83 @@ class TestMutMap:
         mut_map.get_or_else_set(f, "a")
         f.assert_not_called()
 
+    # ==========pop==========
+    @pytest.mark.parametrize(
+        "key, expected_value",
+        [
+            ["a", Some(1)],
+            ["b", Some(2)],
+            ["c", Some(3)],
+            ["d", Nothing()],
+        ],
+    )
+    def test_pop_should_return_expected_value(
+        self, mut_map: MutMap[str, int], key: str, expected_value: Option[int]
+    ) -> None:
+        assert mut_map.pop(key) == expected_value
+
+    def test_pop_should_remove_key_from_map_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.pop("a")
+        assert "a" not in mut_map
+
+    # ==========pop_or==========
+    @pytest.mark.parametrize(
+        "key, expected_value",
+        [
+            ["a", 1],
+            ["b", 2],
+            ["c", 3],
+            ["d", 0],
+        ],
+    )
+    def test_pop_or_should_return_expected_value(
+        self, mut_map: MutMap[str, int], key: str, expected_value: int
+    ) -> None:
+        assert mut_map.pop_or(0, key) == expected_value
+
+    def test_pop_or_should_remove_key_from_map_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.pop_or(0, "a")
+        assert "a" not in mut_map
+
+    # ==========pop_or_else==========
+    @pytest.mark.parametrize(
+        "key, expected_value",
+        [
+            ["a", 1],
+            ["b", 2],
+            ["c", 3],
+            ["d", 0],
+        ],
+    )
+    def test_pop_or_else_should_return_expected_value(
+        self, mut_map: MutMap[str, int], key: str, expected_value: int
+    ) -> None:
+        assert mut_map.pop_or_else(lambda: 0, key) == expected_value
+
+    def test_pop_or_else_should_remove_key_from_map_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.pop_or_else(lambda: 0, "a")
+        assert "a" not in mut_map
+
+    def test_pop_or_else_should_call_f_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        f = mock.Mock()
+        mut_map.pop_or_else(f, "d")
+        f.assert_called_once()
+
+    def test_pop_or_else_should_not_call_f_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        f = mock.Mock()
+        mut_map.pop_or_else(f, "a")
+        f.assert_not_called()
+
     # ==========__setitem__==========
     @pytest.mark.parametrize(
         "key",
