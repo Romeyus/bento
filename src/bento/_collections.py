@@ -1,6 +1,6 @@
 from collections.abc import Callable, ItemsView, Iterator, KeysView, Mapping, ValuesView
 from types import MappingProxyType
-from typing import override
+from typing import Self, override
 
 from bento._monads import Nothing, Option, Some
 
@@ -13,6 +13,9 @@ class Map[K, V]:
         if mapping is None:
             mapping = {}
         self._inner = MappingProxyType(dict(mapping))
+
+    def copy(self) -> Self:
+        return type(self)(self._inner)
 
     def get(self, key: K) -> Option[V]:
         return Some(self._inner[key]) if key in self._inner else Nothing()
@@ -34,6 +37,11 @@ class Map[K, V]:
 
     def __contains__(self, key: K) -> bool:
         return key in self._inner
+
+    def __eq__(self, value: object, /) -> bool:
+        if not isinstance(value, Map):
+            return NotImplemented
+        return self.items() == value.items()
 
     def __iter__(self) -> Iterator[K]:
         return iter(self._inner)

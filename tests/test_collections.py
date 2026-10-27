@@ -22,6 +22,13 @@ def mut_map() -> MutMap[str, int]:
 # ===            Maps                    ===
 # ==========================================
 class TestMap:
+    # ==========copy==========
+    def test_copy_should_return_shallow_copy_of_self(self, map: Map[str, int]) -> None:
+        assert map.copy() == map
+
+    def test_copy_should_not_return_self(self, map: Map[str, int]) -> None:
+        assert map.copy() is not map
+
     # ==========get==========
     @pytest.mark.parametrize(
         "key, expected_value",
@@ -112,6 +119,21 @@ class TestMap:
         self, map: Map[str, int], key: str, expected_value: bool
     ) -> None:
         assert (key in map) is expected_value
+
+    # ==========__eq__==========
+    @pytest.mark.parametrize(
+        "other, expected_value",
+        [
+            [Map({"a": 1, "b": 2, "c": 3}), True],
+            [Map[str, int](), False],
+            ["failure", False],
+            [100, False],
+        ],
+    )
+    def test__eq__should_return_expected_value(
+        self, map: Map[str, int], other: object, expected_value: bool
+    ) -> None:
+        assert (map == other) is expected_value
 
     # ==========__iter__==========
     def test__iter__should_return_iterator_of_keys(self, map: Map[str, int]) -> None:
