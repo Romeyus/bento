@@ -127,6 +127,66 @@ class TestMutMap:
     def test_get_should_return_nothing_if_mut_map_is_empty(self) -> None:
         assert MutMap[str, int]().get("testing") == Nothing()
 
+    # ==========get_or_set==========
+    def test_get_or_set_should_return_default_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        assert mut_map.get_or_set(0, "d") == 0
+
+    def test_get_or_set_should_set_new_value_corresponding_to_key_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.get_or_set(0, "d")
+        assert mut_map.get("d") == Some(0)
+
+    def test_get_or_set_should_return_value_corresponding_to_key_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        assert mut_map.get_or_set(0, "a") == 1
+
+    def test_get_or_set_should_not_set_new_value_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.get_or_set(0, "a")
+        assert mut_map.get("a") == Some(1)
+
+    # ==========get_or_else_set==========
+    def test_get_or_else_set_should_return_result_of_f_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        assert mut_map.get_or_else_set(lambda: 0, "d") == 0
+
+    def test_get_or_else_set_should_set_new_value_corresponding_to_key_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.get_or_else_set(lambda: 0, "d")
+        assert mut_map.get("d") == Some(0)
+
+    def test_get_or_else_set_should_call_f_if_key_not_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        f = mock.Mock()
+        mut_map.get_or_else_set(f, "d")
+        f.assert_called_once()
+
+    def test_get_or_else_set_should_return_value_corresponding_to_key_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        assert mut_map.get_or_else_set(lambda: 0, "a") == 1
+
+    def test_get_or_else_set_should_not_set_new_value_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        mut_map.get_or_else_set(lambda: 0, "a")
+        assert mut_map.get("a") == Some(1)
+
+    def test_get_or_else_set_should_not_call_f_if_key_in_map(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        f = mock.Mock()
+        mut_map.get_or_else_set(f, "a")
+        f.assert_not_called()
+
     # ==========__setitem__==========
     @pytest.mark.parametrize(
         "key",

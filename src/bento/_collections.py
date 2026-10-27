@@ -49,5 +49,22 @@ class MutMap[K, V](Map[K, V]):
             mapping = {}
         self._inner = dict(mapping)
 
+    def get_or_set(self, default: V, key: K) -> V:
+        match self.get(key):
+            case Some(value):
+                return value
+            case Nothing():
+                self[key] = default
+                return default
+
+    def get_or_else_set(self, f: Callable[[], V], key: K) -> V:
+        match self.get(key):
+            case Some(value):
+                return value
+            case Nothing():
+                default = f()
+                self[key] = default
+                return default
+
     def __setitem__(self, key: K, value: V) -> None:
         self._inner[key] = value
