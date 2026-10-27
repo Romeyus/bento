@@ -116,6 +116,20 @@ class Vec[T]:
     def get_or_else(self, f: Callable[[], T], index: int) -> T:
         return self.get(index).unwrap_or_else(f)
 
+    def __contains__(self, value: T) -> bool:
+        return value in self._inner
+
+    def __eq__(self, value: object, /) -> bool:
+        if not isinstance(value, Vec):
+            return NotImplemented
+        return tuple(self) == tuple(value)  # type: ignore
+
+    def __iter__(self) -> Iterator[T]:
+        return iter(self._inner)
+
+    def __len__(self) -> int:
+        return len(self._inner)
+
 
 class MutVec[T](Vec[T]):
     @override

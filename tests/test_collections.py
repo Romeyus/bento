@@ -386,6 +386,44 @@ class TestVec:
         vec.get_or_else(f, 4)
         f.assert_called_once()
 
+    # ==========__contains__==========
+    @pytest.mark.parametrize(
+        "value, expected_value",
+        [
+            ["a", True],
+            ["b", True],
+            ["c", True],
+            ["d", False],
+        ],
+    )
+    def test__contains__should_return_expected_value(
+        self, vec: Vec[str], value: str, expected_value: bool
+    ) -> None:
+        assert (value in vec) is expected_value
+
+    # ==========__eq__==========
+    @pytest.mark.parametrize(
+        "other, expected_value",
+        [
+            [Vec(["a", "b", "c"]), True],
+            [Vec[str](), False],
+            ["failure", False],
+            [100, False],
+        ],
+    )
+    def test__eq__should_return_expected_value(
+        self, vec: Vec[str], other: object, expected_value: bool
+    ) -> None:
+        assert (vec == other) is expected_value
+
+    # ==========__iter__==========
+    def test__iter__should_return_iterator_of_values(self, vec: Vec[str]) -> None:
+        assert list(iter(vec)) == ["a", "b", "c"]
+
+    # ==========__len__==========
+    def test__len__should_return_nb_of_values(self, vec: Vec[str]) -> None:
+        assert len(vec) == 3
+
 
 class TestMutVec:
     # ==========get==========
