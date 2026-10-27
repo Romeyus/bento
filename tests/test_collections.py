@@ -84,6 +84,29 @@ class TestMap:
         map.get_or_else(f, "a")
         f.assert_not_called()
 
+    # ==========__contains__==========
+    @pytest.mark.parametrize(
+        "key, expected_value",
+        [
+            ["a", True],
+            ["b", True],
+            ["c", True],
+            ["d", False],
+        ],
+    )
+    def test__contains__should_return_expected_value(
+        self, map: Map[str, int], key: str, expected_value: bool
+    ) -> None:
+        assert (key in map) is expected_value
+
+    # ==========__iter__==========
+    def test__iter__should_return_iterator_of_keys(self, map: Map[str, int]) -> None:
+        assert list(iter(map)) == ["a", "b", "c"]
+
+    # ==========__len__==========
+    def test__len__should_return_nb_of_keys(self, map: Map[str, int]) -> None:
+        assert len(map) == 3
+
 
 class TestMutMap:
     # ==========get==========

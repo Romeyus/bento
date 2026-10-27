@@ -1,4 +1,4 @@
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from types import MappingProxyType
 from typing import override
 
@@ -22,6 +22,15 @@ class Map[K, V]:
 
     def get_or_else(self, f: Callable[[], V], key: K) -> V:
         return self.get(key).unwrap_or_else(f)
+
+    def __contains__(self, key: K) -> bool:
+        return key in self._inner
+
+    def __iter__(self) -> Iterator[K]:
+        return iter(self._inner)
+
+    def __len__(self) -> int:
+        return len(self._inner)
 
 
 class MutMap[K, V](Map[K, V]):

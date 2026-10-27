@@ -1,4 +1,4 @@
-from bento._maps import Map, MutMap
+from bento._collections import Map, MutMap
 from bento._monads import Err, Nothing, Ok, Option, Result, Some, UnwrapError
 
 __all__ = (
