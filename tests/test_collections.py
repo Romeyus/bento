@@ -5,6 +5,9 @@ import pytest
 from bento import Map, MutMap, Nothing, Option, Some
 
 
+# ==========================================
+# ===            Fixtures                ===
+# ==========================================
 @pytest.fixture
 def map() -> Map[str, int]:
     return Map({"a": 1, "b": 2, "c": 3})
@@ -15,6 +18,9 @@ def mut_map() -> MutMap[str, int]:
     return MutMap({"a": 1, "b": 2, "c": 3})
 
 
+# ==========================================
+# ===            Maps                    ===
+# ==========================================
 class TestMap:
     # ==========get==========
     @pytest.mark.parametrize(

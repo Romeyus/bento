@@ -5,6 +5,9 @@ from typing import override
 from bento._monads import Nothing, Option, Some
 
 
+# ==========================================
+# ===            Maps                    ===
+# ==========================================
 class Map[K, V]:
     def __init__(self, mapping: Mapping[K, V] | None = None) -> None:
         if mapping is None:
