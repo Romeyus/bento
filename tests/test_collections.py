@@ -155,6 +155,12 @@ class TestMap:
 
 
 class TestMutMap:
+    # ==========copy==========
+    def test_copy_should_return_shallow_copy_of_self(
+        self, mut_map: MutMap[str, int]
+    ) -> None:
+        assert mut_map.copy() == mut_map
+
     # ==========get==========
     def test_get_should_return_nothing_if_mut_map_is_empty(self) -> None:
         assert MutMap[str, int]().get("testing") == Nothing()
@@ -312,6 +318,13 @@ class TestMutMap:
 # ===            Vectors                 ===
 # ==========================================
 class TestVec:
+    # ==========copy==========
+    def test_copy_should_return_shallow_copy_of_self(self, vec: Vec[str]) -> None:
+        assert vec.copy() == vec
+
+    def test_copy_should_not_return_self(self, vec: Vec[str]) -> None:
+        assert vec.copy() is not vec
+
     # ==========get==========
     @pytest.mark.parametrize(
         "index, expected_value",
@@ -426,6 +439,12 @@ class TestVec:
 
 
 class TestMutVec:
+    # ==========copy==========
+    def test_copy_should_return_shallow_copy_of_self(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        assert mut_vec.copy() == mut_vec
+
     # ==========get==========
     def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
         assert MutVec[str]().get(100) == Nothing()

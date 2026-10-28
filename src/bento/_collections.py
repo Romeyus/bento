@@ -104,6 +104,9 @@ class Vec[T]:
             iterable = []
         self._inner = tuple(iterable)
 
+    def copy(self) -> Self:
+        return type(self)(self._inner)
+
     def get(self, index: int) -> Option[T]:
         try:
             return Some(self._inner[index])
