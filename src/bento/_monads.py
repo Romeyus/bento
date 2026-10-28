@@ -3,7 +3,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, cast, final, override
 
-from ._metaclasses import SingletonMeta
+from ._abc import Singleton
 
 # ==========================================
 # ===            Types                   ===
@@ -197,7 +197,7 @@ class Some[T](_Option[T]):
 
 @final
 @dataclass(frozen=True, slots=True)
-class Nothing[T = Any](_Option[T], metaclass=SingletonMeta):
+class Nothing[T = Any](_Option[T], Singleton):
     value: None = field(default=None, init=False)
 
     @override
