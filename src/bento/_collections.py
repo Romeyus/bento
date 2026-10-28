@@ -10,7 +10,7 @@ from collections.abc import (
 from types import MappingProxyType
 from typing import Self, override
 
-from bento._monads import Nothing, Option, Some
+from ._monads import Nothing, Option, Some
 
 
 # ==========================================

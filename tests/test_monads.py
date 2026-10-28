@@ -66,7 +66,7 @@ class TestSome:
     def test_filter_should_return_nothing_if_predicate_returns_false(
         self, some: Option[int]
     ) -> None:
-        assert some.filter(lambda _: False) == Nothing()
+        assert some.filter(lambda _: False) is Nothing()
 
     def test_filter_should_call_predicate_with_wrapped_value(
         self, some: Option[int]
@@ -412,7 +412,7 @@ class TestOk:
 
     # ==========err==========
     def test_err_should_return_nothing(self, ok: Result[int, str]) -> None:
-        assert ok.err() == Nothing()
+        assert ok.err() is Nothing()
 
     # ==========expect==========
     def test_expect_should_return_contained_value(self, ok: Result[int, str]) -> None:
@@ -700,7 +700,7 @@ class TestErr:
 
     # ==========ok==========
     def test_ok_should_return_nothing(self, err: Result[int, str]) -> None:
-        assert err.ok() == Nothing()
+        assert err.ok() is Nothing()
 
     # ==========or_==========
     @pytest.mark.parametrize(

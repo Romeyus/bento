@@ -55,7 +55,7 @@ class TestMap:
         assert map.get(key) == expected_value
 
     def test_get_should_return_nothing_if_map_is_empty(self) -> None:
-        assert Map[str, int]().get("testing") == Nothing()
+        assert Map[str, int]().get("testing") is Nothing()
 
     # ==========get_or==========
     @pytest.mark.parametrize(
@@ -163,7 +163,7 @@ class TestMutMap:
 
     # ==========get==========
     def test_get_should_return_nothing_if_mut_map_is_empty(self) -> None:
-        assert MutMap[str, int]().get("testing") == Nothing()
+        assert MutMap[str, int]().get("testing") is Nothing()
 
     # ==========get_or_set==========
     def test_get_or_set_should_return_default_if_key_not_in_map(
@@ -330,7 +330,7 @@ class TestVec:
         assert vec.first() == Some("a")
 
     def test_first_should_return_nothing_if_vec_is_empty(self) -> None:
-        assert Vec[str]().first() == Nothing()
+        assert Vec[str]().first() is Nothing()
 
     # ==========get==========
     @pytest.mark.parametrize(
@@ -352,7 +352,7 @@ class TestVec:
         assert vec.get(index) == expected_value
 
     def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
-        assert Vec[str]().get(100) == Nothing()
+        assert Vec[str]().get(100) is Nothing()
 
     # ==========get_or==========
     @pytest.mark.parametrize(
@@ -411,7 +411,7 @@ class TestVec:
         assert vec.last() == Some("c")
 
     def test_last_should_return_nothing_if_vec_is_empty(self) -> None:
-        assert Vec[str]().last() == Nothing()
+        assert Vec[str]().last() is Nothing()
 
     # ==========__contains__==========
     @pytest.mark.parametrize(
@@ -478,7 +478,7 @@ class TestMutVec:
 
     # ==========get==========
     def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
-        assert MutVec[str]().get(100) == Nothing()
+        assert MutVec[str]().get(100) is Nothing()
 
     # ==========insert==========
     def test_insert_should_add_value_to_vec_before_index(

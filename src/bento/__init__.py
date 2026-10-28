@@ -1,5 +1,6 @@
-from bento._collections import Map, MutMap, MutVec, Vec
-from bento._monads import Err, Nothing, Ok, Option, Result, Some, UnwrapError
+from ._collections import Map, MutMap, MutVec, Vec
+from ._metaclasses import SingletonMeta
+from ._monads import Err, Nothing, Ok, Option, Result, Some, UnwrapError
 
 __all__ = (
     "Err",
@@ -10,6 +11,7 @@ __all__ = (
     "Ok",
     "Option",
     "Result",
+    "SingletonMeta",
     "Some",
     "UnwrapError",
     "Vec",
