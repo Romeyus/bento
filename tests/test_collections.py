@@ -448,3 +448,16 @@ class TestMutVec:
     # ==========get==========
     def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
         assert MutVec[str]().get(100) == Nothing()
+
+    # ==========__setitem__==========
+    def test__setitem__should_set_new_value_at_index_if_index_in_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec[0] = "d"
+        assert mut_vec.get(0) == Some("d")
+
+    def test__setitem__should_raise_IndexError_if_index_out_of_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        with pytest.raises(IndexError):
+            mut_vec[100] = "d"

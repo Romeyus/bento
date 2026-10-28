@@ -140,3 +140,6 @@ class MutVec[T](Vec[T]):
         if iterable is None:
             iterable = []
         self._inner = list(iterable)
+
+    def __setitem__(self, index: int, value: T) -> None:
+        self._inner[index] = value
