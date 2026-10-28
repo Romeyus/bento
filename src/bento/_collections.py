@@ -76,8 +76,8 @@ class MutMap[K, V](Map[K, V]):
     def get_or_set(self, default: V, key: K) -> V:
         """
         Sets `default` corresponding to `key` if `key` not in `self`, then returns:
-            - `Some(v)` if `key` in `self` (where `v` is the value corresponding to `key`), or
-            - `Nothing` if `key` not in `self`
+            - `v` if `key` in `self` (where `v` is the value corresponding to `key`), or
+            - `default` if `key` not in `self`
         """
         match self.get(key):
             case Some(value):
@@ -89,8 +89,8 @@ class MutMap[K, V](Map[K, V]):
     def get_or_else_set(self, f: Callable[[], V], key: K) -> V:
         """
         Sets the result of `f` corresponding to `key` if `key` not in `self`, then returns:
-            - `Some(v)` if `key` in `self` (where `v` is the value corresponding to `key`), or
-            - `Nothing` if `key` not in `self`
+            - `v` if `key` in `self` (where `v` is the value corresponding to `key`), or
+            - the result of `f` if `key` not in `self`
         """
         match self.get(key):
             case Some(value):
