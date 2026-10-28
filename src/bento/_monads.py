@@ -41,7 +41,7 @@ class _Option[T](ABC):
     def filter(self, predicate: Callable[[T], bool]) -> Option[T]:
         """
         Returns `Nothing` if the option is `Nothing`, otherwise calls `predicate` with the wrapped value and returns:
-            - `Some(v)` if `predicate` returns `True` (where `v` is the wrapped value), and
+            - `Some(v)` if `predicate` returns `True` (where `v` is the wrapped value), or
             - `Nothing` if `predicate` returns `False`
         """
 
