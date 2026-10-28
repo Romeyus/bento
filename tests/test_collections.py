@@ -325,6 +325,13 @@ class TestVec:
     def test_copy_should_not_return_self(self, vec: Vec[str]) -> None:
         assert vec.copy() is not vec
 
+    # ==========first==========
+    def test_first_should_return_first_value(self, vec: Vec[str]) -> None:
+        assert vec.first() == Some("a")
+
+    def test_first_should_return_nothing_if_vec_is_empty(self) -> None:
+        assert Vec[str]().first() == Nothing()
+
     # ==========get==========
     @pytest.mark.parametrize(
         "index, expected_value",
@@ -399,6 +406,13 @@ class TestVec:
         vec.get_or_else(f, 4)
         f.assert_called_once()
 
+    # ==========last==========
+    def test_last_should_return_last_value(self, vec: Vec[str]) -> None:
+        assert vec.last() == Some("c")
+
+    def test_last_should_return_nothing_if_vec_is_empty(self) -> None:
+        assert Vec[str]().last() == Nothing()
+
     # ==========__contains__==========
     @pytest.mark.parametrize(
         "value, expected_value",
@@ -439,15 +453,41 @@ class TestVec:
 
 
 class TestMutVec:
+    # ==========append==========
+    def test_append_should_add_value_to_end_of_vec(self, mut_vec: MutVec[str]) -> None:
+        mut_vec.append("d")
+        assert mut_vec.last() == Some("d") and len(mut_vec) == 4
+
     # ==========copy==========
     def test_copy_should_return_shallow_copy_of_self(
         self, mut_vec: MutVec[str]
     ) -> None:
         assert mut_vec.copy() == mut_vec
 
+    # ==========extend==========
+    def test_extend_should_add_values_of_iterable_to_end_of_vec_in_order(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.extend(["d", "e"])
+        assert (mut_vec.get(-2) == Some("d")) and (mut_vec.get(-1) == Some("e"))
+
     # ==========get==========
     def test_get_should_return_nothing_if_vec_is_empty(self) -> None:
         assert MutVec[str]().get(100) == Nothing()
+
+    # ==========insert==========
+    def test_insert_should_add_value_to_vec_before_index(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.insert(1, "z")
+        assert mut_vec.get(1) == Some("z") and len(mut_vec) == 4
+
+    # ==========prepend==========
+    def test_prepend_should_add_value_to_start_of_vec(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.prepend("z")
+        assert mut_vec.first() == Some("z") and len(mut_vec) == 4
 
     # ==========__setitem__==========
     def test__setitem__should_set_new_value_at_index_if_index_in_range(

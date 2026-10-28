@@ -107,6 +107,9 @@ class Vec[T]:
     def copy(self) -> Self:
         return type(self)(self._inner)
 
+    def first(self) -> Option[T]:
+        return self.get(0)
+
     def get(self, index: int) -> Option[T]:
         try:
             return Some(self._inner[index])
@@ -118,6 +121,9 @@ class Vec[T]:
 
     def get_or_else(self, f: Callable[[], T], index: int) -> T:
         return self.get(index).unwrap_or_else(f)
+
+    def last(self) -> Option[T]:
+        return self.get(-1)
 
     def __contains__(self, value: T) -> bool:
         return value in self._inner
@@ -140,6 +146,18 @@ class MutVec[T](Vec[T]):
         if iterable is None:
             iterable = []
         self._inner = list(iterable)
+
+    def append(self, value: T) -> None:
+        self._inner.append(value)
+
+    def extend(self, iterable: Iterable[T]) -> None:
+        self._inner.extend(iterable)
+
+    def insert(self, index: int, value: T) -> None:
+        self._inner.insert(index, value)
+
+    def prepend(self, value: T) -> None:
+        self._inner.insert(0, value)
 
     def __setitem__(self, index: int, value: T) -> None:
         self._inner[index] = value
