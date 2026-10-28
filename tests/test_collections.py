@@ -487,6 +487,113 @@ class TestMutVec:
         mut_vec.insert(1, "z")
         assert mut_vec.get(1) == Some("z") and len(mut_vec) == 4
 
+    # ==========pop==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, Some("a")],
+            [1, Some("b")],
+            [2, Some("c")],
+            [3, Nothing()],
+            [-1, Some("c")],
+            [-2, Some("b")],
+            [-3, Some("a")],
+            [-4, Nothing()],
+        ],
+    )
+    def test_pop_should_return_expected_value(
+        self, mut_vec: MutVec[str], index: int, expected_value: Option[str]
+    ) -> None:
+        assert mut_vec.pop(index) == expected_value
+
+    def test_pop_should_remove_value_at_index_if_index_in_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop(0)
+        assert "a" not in mut_vec and len(mut_vec) == 2
+
+    def test_pop_should_not_modify_vec_if_index_out_of_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop(100)
+        assert len(mut_vec) == 3
+
+    # ==========pop_or==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, "a"],
+            [1, "b"],
+            [2, "c"],
+            [3, "z"],
+            [-1, "c"],
+            [-2, "b"],
+            [-3, "a"],
+            [-4, "z"],
+        ],
+    )
+    def test_pop_or_should_return_expected_value(
+        self, mut_vec: MutVec[str], index: int, expected_value: str
+    ) -> None:
+        assert mut_vec.pop_or("z", index) == expected_value
+
+    def test_pop_or_should_remove_value_at_index_if_index_in_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop_or("z", 0)
+        assert "a" not in mut_vec and len(mut_vec) == 2
+
+    def test_pop_or_should_not_modify_vec_if_index_out_of_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop_or("z", 100)
+        assert len(mut_vec) == 3
+
+    # ==========pop_or_else==========
+    @pytest.mark.parametrize(
+        "index, expected_value",
+        [
+            [0, "a"],
+            [1, "b"],
+            [2, "c"],
+            [3, "z"],
+            [-1, "c"],
+            [-2, "b"],
+            [-3, "a"],
+            [-4, "z"],
+        ],
+    )
+    def test_pop_or_else_should_return_expected_value(
+        self, mut_vec: MutVec[str], index: int, expected_value: str
+    ) -> None:
+        assert mut_vec.pop_or_else(lambda: "z", index) == expected_value
+
+    def test_pop_or_else_should_remove_value_at_index_if_index_in_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop_or_else(lambda: "z", 0)
+        assert "a" not in mut_vec and len(mut_vec) == 2
+
+    def test_pop_or_else_should_not_modify_vec_if_index_out_of_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        mut_vec.pop_or_else(lambda: "z", 100)
+        assert len(mut_vec) == 3
+
+    def test_pop_or_else_should_not_call_f_if_index_in_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        f = mock.Mock()
+        mut_vec.pop_or_else(f, 0)
+        f.assert_not_called()
+
+    def test_pop_or_else_should_call_f_if_index_out_of_range(
+        self, mut_vec: MutVec[str]
+    ) -> None:
+        f = mock.Mock()
+        mut_vec.pop_or_else(f, 100)
+        f.assert_called_once()
+
     # ==========prepend==========
     def test_prepend_should_add_value_to_start_of_vec(
         self, mut_vec: MutVec[str]

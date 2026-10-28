@@ -159,6 +159,18 @@ class MutVec[T](Vec[T]):
     def insert(self, index: int, value: T) -> None:
         self._inner.insert(index, value)
 
+    def pop(self, index: int = -1) -> Option[T]:
+        try:
+            return Some(self._inner.pop(index))
+        except IndexError:
+            return Nothing()
+
+    def pop_or(self, default: T, index: int = -1) -> T:
+        return self.pop(index).unwrap_or(default)
+
+    def pop_or_else(self, f: Callable[[], T], index: int = -1) -> T:
+        return self.pop(index).unwrap_or_else(f)
+
     def prepend(self, value: T) -> None:
         self._inner.insert(0, value)
 
