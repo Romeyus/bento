@@ -150,6 +150,9 @@ class MutVec[T](Vec[T]):
     def append(self, value: T) -> None:
         self._inner.append(value)
 
+    def clear(self) -> None:
+        self._inner.clear()
+
     def extend(self, iterable: Iterable[T]) -> None:
         self._inner.extend(iterable)
 

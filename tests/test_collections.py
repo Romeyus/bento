@@ -458,6 +458,11 @@ class TestMutVec:
         mut_vec.append("d")
         assert mut_vec.last() == Some("d") and len(mut_vec) == 4
 
+    # ==========clear==========
+    def test_clear_should_empty_vec(self, mut_vec: MutVec[str]) -> None:
+        mut_vec.clear()
+        assert mut_vec == MutVec[str]()
+
     # ==========copy==========
     def test_copy_should_return_shallow_copy_of_self(
         self, mut_vec: MutVec[str]
