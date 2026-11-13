@@ -1,7 +1,7 @@
 [project]
 name = "bento"
 version = "0.1.0"
-description = "The functional, all-in-one toolkit for Python."
+description = "The all-in-one toolkit for Python."
 readme = "README.md"
 authors = [{ name = "Romeyus", email = "marco.possamai@proton.me" }]
 requires-python = ">=3.15"
@@ -32,3 +32,9 @@ addopts = [
 ]
 pythonpath = ["src"]
 strict = true
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+extend-select = ["E501"]
