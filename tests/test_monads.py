@@ -40,8 +40,8 @@ class TestSome:
     @pytest.mark.parametrize(
         "value, expected",
         [
-            [True, Some(100)],
-            [False, Nothing()],
+            (True, Some(100)),
+            (False, Nothing()),
         ],
     )
     def test_filter_should_return_expected(
